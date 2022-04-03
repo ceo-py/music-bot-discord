@@ -1,0 +1,7 @@
+pynacl
+asyncio
+youtube_dl
+pafy
+discord
+discord_buttons_plugin
+requests
