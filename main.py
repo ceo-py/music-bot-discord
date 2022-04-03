@@ -58,10 +58,9 @@ class Player(commands.Cog):
     async def pla(self, ctx, *, song=None):
         p = Playlist(song)
         number_songs = 0
-        for _ in p:
+        for pos, _ in enumerate(p, 1):
             song_queue[ctx.guild.id].append(_)
-            number_songs += 1
-            if number_songs == 20:
+            if pos == 20:
                 break
         try:
             await ctx.author.voice.channel.connect()
