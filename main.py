@@ -57,7 +57,6 @@ class Player(commands.Cog):
     @commands.command(aliases=['pl', "//"])
     async def pla(self, ctx, *, song=None):
         p = Playlist(song)
-        number_songs = 0
         for pos, _ in enumerate(p, 1):
             song_queue[ctx.guild.id].append(_)
             if pos == 20:
@@ -75,7 +74,7 @@ class Player(commands.Cog):
 
         await self.play_song(ctx, song_queue[ctx.guild.id][0])
         song_queue[ctx.guild.id].pop(0)
-        await ctx.send(f"{number_songs} songs has been added to the playlist!")
+        await ctx.send(f"{pos} songs has been added to the playlist!")
 
     @commands.command(aliases=['p', 's', 'r', "/"])
     async def play(self, ctx, *, song=None):
