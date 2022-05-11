@@ -199,28 +199,5 @@ async def on_message(message):
     await client.process_commands(message)
 
 
-@client.command()
-async def live(ctx):
-    session = HTMLSession()
-    r = session.get('https://www.jokerlivestream.art/joker-nba-live-stream-9.html')
-    find_games = r.html.find(".f1-podium--item ")
-    show_urls = {}
-    show_text = ""
-    embed = discord.Embed(
-        title=f"NBA Games to watch!!",
-        colour=discord.Colour.red())
-    for i in find_games:
-        if "Usa - NBA" in i.text:
-            find_text = i.text.find("NBA")
-            clear_text = i.text[find_text + 4:].replace(" Watch", "")
-            all_game_links = [x for x in i.absolute_links]
-            show_urls[clear_text] = all_game_links[0]
-
-    for game, url in show_urls.items():
-        show_text += f"[{game}]({url})\n"
-    embed.description = show_text
-    await ctx.send(embed=embed)
-
-
 client.loop.create_task(setup())
 client.run(TOKEN)
