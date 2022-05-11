@@ -59,9 +59,8 @@ class Player(commands.Cog):
     async def playlist(self, ctx, *, song=None):
         p = Playlist(song)
         number_songs = 0
-        for _ in p:
+        for number_songs, _ in enumerate(p,1):
             song_queue[ctx.guild.id].append(_)
-            number_songs += 1
             if number_songs == 20:
                 break
         try:
