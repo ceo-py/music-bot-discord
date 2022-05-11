@@ -7,16 +7,17 @@ import urllib.request
 import json
 import urllib
 from pytube import Playlist
+from requests_html import HTMLSession
 
 client = commands.Bot(command_prefix=["?", "/"], help_command=None)
-TOKEN = ("YOUR BOT TOKEN HERE")
+TOKEN = ("YOUR TOKEN HERE")
 buttons = ButtonsClient(client)
 song_queue = {}
 
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name='Waiting to play some jam!'))
+    await client.change_presence(activity=discord.Game(name='Playing your awesome music!!!'))
 
 
 intents = discord.Intents.default()
@@ -52,21 +53,23 @@ class Player(commands.Cog):
         ctx.voice_client.source.volume = 0.5
         self.name_song = pafy.new(song).title
         await ctx.send(f":musical_note: `{self.name_song}`")
-        await play_buttons(self, ctx)
+        await play_buttons(ctx)
 
-    @commands.command(aliases=['pl', "//"])
-    async def pla(self, ctx, *, song=None):
+    @commands.command(aliases=['pl'])
+    async def playlist(self, ctx, *, song=None):
         p = Playlist(song)
-        for pos, _ in enumerate(p, 1):
+        number_songs = 0
+        for _ in p:
             song_queue[ctx.guild.id].append(_)
-            if pos == 20:
+            number_songs += 1
+            if number_songs == 20:
                 break
         try:
             await ctx.author.voice.channel.connect()
         except:
             pass
         if song is None:
-            return await ctx.send("You must include a song to play.\nTip - `type // song name`")
+            return await ctx.send("You must include a playlist.\nTip - `type ?pl playlist url from youtube`")
 
         if ctx.voice_client is None:
             return await ctx.send(
@@ -74,16 +77,16 @@ class Player(commands.Cog):
 
         await self.play_song(ctx, song_queue[ctx.guild.id][0])
         song_queue[ctx.guild.id].pop(0)
-        await ctx.send(f"{pos} songs has been added to the playlist!")
+        await ctx.send(f"{number_songs} songs has been added to the playlist!")
 
-    @commands.command(aliases=['p', 's', 'r', "/"])
+    @commands.command(aliases=['p', 's', 'r'])
     async def play(self, ctx, *, song=None):
         try:
             await ctx.author.voice.channel.connect()
         except:
             pass
         if song is None:
-            return await ctx.send("You must include a song to play.\nTip - `type // song name`")
+            return await ctx.send("You must include a song to play.\nTip - `type ?p song name`")
 
         if ctx.voice_client is None:
             return await ctx.send(
@@ -194,6 +197,29 @@ async def on_message(message):
         await ctx.send(embed=embed)
 
     await client.process_commands(message)
+
+
+@client.command()
+async def live(ctx):
+    session = HTMLSession()
+    r = session.get('https://www.jokerlivestream.art/joker-nba-live-stream-9.html')
+    find_games = r.html.find(".f1-podium--item ")
+    show_urls = {}
+    show_text = ""
+    embed = discord.Embed(
+        title=f"NBA Games to watch!!",
+        colour=discord.Colour.red())
+    for i in find_games:
+        if "Usa - NBA" in i.text:
+            find_text = i.text.find("NBA")
+            clear_text = i.text[find_text + 4:].replace(" Watch", "")
+            all_game_links = [x for x in i.absolute_links]
+            show_urls[clear_text] = all_game_links[0]
+
+    for game, url in show_urls.items():
+        show_text += f"[{game}]({url})\n"
+    embed.description = show_text
+    await ctx.send(embed=embed)
 
 
 client.loop.create_task(setup())
