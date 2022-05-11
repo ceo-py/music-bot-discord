@@ -13,5 +13,6 @@ prefix=["?", "/"]
 
 to play music - play aliases=['p', 's', 'r', "/"]
 
-load play list - pla aliases=['pl', "//"]
+load play list - playlist aliases=['pl']
+
  
