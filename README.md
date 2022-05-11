@@ -11,7 +11,7 @@ Commands:
 
 prefix=["?", "/"] 
 
-to play music - play aliases=['p', 's', 'r', "/"]
+to play music - play aliases=['p', 's', 'r']
 
 load play list - playlist aliases=['pl']
 
